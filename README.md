@@ -132,7 +132,7 @@ make clean       # Remove containers and volumes (destructive)
 
 ### Project Structure
 
-```
+```bash
 zimna/
 ├── backend/              # Django REST API
 │   ├── config/           # Django settings
