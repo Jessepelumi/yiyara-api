@@ -114,20 +114,20 @@ The application will be available at:
 
 ```bash
 # Docker Management
-make up          # Start all containers
-make down        # Stop all containers
-make build       # Rebuild containers
-make restart     # Restart services
-make logs        # View backend logs
+make up             # Start all containers
+make down           # Stop all containers
+make build          # Rebuild containers
+make restart        # Restart services
+make logs           # View backend logs
 
 # Django Management
-make migrate     # Run database migrations
-make superuser   # Create admin user
-make shell       # Open Django shell
+make migrate        # Run database migrations
+make superuser      # Create admin user
+make shell          # Open Django shell
 make collectstatic  # Collect static files
 
 # Cleanup
-make clean       # Remove containers and volumes (destructive)
+make clean          # Remove containers and volumes (destructive)
 ```
 
 ### Project Structure
