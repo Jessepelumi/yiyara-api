@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import DecomposeGoalView
 
 urlpatterns = [
-    path('', views.index, name='index')
+    path('decompose/', DecomposeGoalView.as_view(), name='decompose-goal')
 ]
