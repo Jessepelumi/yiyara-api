@@ -135,20 +135,20 @@ make clean       # Remove containers and volumes (destructive)
 ```
 zimna/
 ├── backend/              # Django REST API
-│   ├── config/          # Django settings
-│   ├── goals/           # Goal management app
-│   ├── tasks/           # Task management app
-│   ├── users/           # User authentication
-│   ├── workflow/        # AI processing engine
+│   ├── config/           # Django settings
+│   ├── goals/            # Goal management app
+│   ├── tasks/            # Task management app
+│   ├── users/            # User authentication
+│   ├── workflow/         # AI processing engine
 │   └── requirements.txt
 ├── frontend/             # Next.js application
 │   ├── src/
-│   │   ├── app/         # Next.js app router
-│   │   └── components/  # Reusable UI components
+│   │   ├── app/          # Next.js app router
+│   │   └── components/   # Reusable UI components
 │   └── package.json
 ├── docs/                 # Documentation
 ├── docker-compose.yml    # Container orchestration
-├── Makefile             # Development commands
+├── Makefile              # Development commands
 └── README.md
 ```
 
