@@ -2,6 +2,9 @@
 
 This documentation was created using an LLM, so I'll be making edits gradually.
 
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat&logo=docker)](https://www.docker.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Zimna is an AI-powered life planning and goal management platform designed to help users turn long-term aspirations into clear, actionable steps. Using advanced AI technology, Zimna transforms vague goals into SMART (Specific, Measurable, Actionable, Realistic, Time-bound) objectives with detailed task breakdowns.
