@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sen } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const sen = Sen({
   weight: "400",
@@ -22,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sen.className} antialiased`}>{children}</body>
+      <body className={`${sen.className} antialiased`}>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
