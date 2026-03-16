@@ -1,10 +1,15 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from workflow import ai_engine
 from .serializers import GoalSerializer
+from .models import Goal
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DecomposeGoalView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -41,3 +46,26 @@ class DecomposeGoalView(APIView):
                 {"error": "AI Processing Failed", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class GoalListView(ListAPIView):
+    """
+    Returns a list of all goals and their nested tasks
+    for the authenticated user.
+    """
+
+    serializer_class = GoalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user).prefetch_related('tasks').order_by('-id')
+    
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error fetching goals for user {request.user.id}: {str(e)}")
+            return Response(
+                {"error": "Failed to reterieve goals.", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
