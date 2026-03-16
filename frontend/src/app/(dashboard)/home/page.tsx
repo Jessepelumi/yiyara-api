@@ -93,9 +93,9 @@ export default function Home() {
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              disabled={isLoading}
+              disabled={mutation.isPending}
               placeholder={
-                isLoading
+                mutation.isPending
                   ? "Zimna is decomposing..."
                   : "Ask whatever you want..."
               }
