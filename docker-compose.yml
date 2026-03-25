@@ -6,16 +6,9 @@ services:
       - ./backend:/app
     ports:
       - "8000:8000"
-    environment:
-      # Pulled directly from the .env file
-      - PGHOST=${PGHOST}
-      - PGDATABASE=${PGDATABASE}
-      - PGUSER=${PGUSER}
-      - PGPASSWORD=${PGPASSWORD}
-      - PGPORT=${PGPORT}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - DEBUG=${DEBUG}
-      - DATABASE_URL=postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require
+    env_file:
+      - .env
+    command: python manage.py runserver 0.0.0.0:8000
 
   # Nextjs frontend for Zimna
   frontend:
@@ -25,7 +18,10 @@ services:
       - /app/node_modules
     ports:
       - "3000:3000"
+    env_file:
+      - frontend/.env
     environment:
+      - BASE_URL=http://backend:8000/api
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
