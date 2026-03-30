@@ -37,7 +37,7 @@ export default function AppHome() {
       <button
         onClick={handleStartNow}
         disabled={status === "loading"}
-        className="group py-2 px-3 rounded-lg flex items-center gap-1.5 text-white bg-blue-500 hover:bg-blue-600 transition"
+        className="group py-2 px-3 rounded-lg flex items-center gap-1.5 text-white bg-blue-600 hover:bg-blue-700 transition"
       >
         {status === "loading" ? "Getting You Started..." : "Start Now"}
         <span className="transition-transform duration-200 group-hover:translate-x-1">
