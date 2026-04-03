@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CheckSquareOffsetIcon,
   GearIcon,
   MagnifyingGlassIcon,
   NetworkIcon,
@@ -25,7 +26,7 @@ export const Sidebar = () => {
 
         <nav className="flex flex-col gap-3">
           <SidebarItem icon={SparkleIcon} text="New Prompt" href="/home" />
-          <SidebarItem icon={SparkleIcon} text="Goals & Tasks" href="/goals" />
+          <SidebarItem icon={CheckSquareOffsetIcon} text="Goals & Tasks" href="/goals" />
           <SidebarItem icon={TargetIcon} text="Objectives" href="/objectives" />
           <SidebarItem icon={NetworkIcon} text="Goal Connections" href="" />
         </nav>
