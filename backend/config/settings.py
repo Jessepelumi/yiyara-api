@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'users', # Custom user management app, handles User model & authentication
     'goals', # Goal management app, handles creation, tracking, & AI-powered breakdowns
     'tasks', # Task management app, handles individual tasks & tracking
+    'conversations', # User & AI conversations app
 ]
 
 # Use custom user model from users app
