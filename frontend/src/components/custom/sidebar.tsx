@@ -4,31 +4,66 @@ import {
   CheckSquareOffsetIcon,
   GearIcon,
   MagnifyingGlassIcon,
-  NetworkIcon,
+  //NetworkIcon,
   QuestionIcon,
   SidebarSimpleIcon,
   SparkleIcon,
-  TargetIcon,
+  //TargetIcon,
+  TerminalWindowIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { LogOut, SidebarItem, SidebarItemVariant } from "./sidebarItem";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export const Sidebar = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
-    <section className="hidden h-dvh w-1/5 border-r px-3.5 py-5 lg:flex flex-col justify-between">
+    <section
+      className={`hidden h-dvh border-r px-3.5 py-5 lg:flex flex-col justify-between transition-all duration-300 ease-in-out ${isCollapsed ? "w-fit" : "w-1/5"}`}
+    >
       <div className="flex flex-col gap-7">
         <div className="flex justify-between items-center">
-          <SidebarSimpleIcon size={20} />
+          <Button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            variant="link"
+            className="text-gray-500 hover:text-blue-700 cursor-e-resize"
+          >
+            <SidebarSimpleIcon size={20} />
+          </Button>
 
-          <MagnifyingGlassIcon size={18} />
+          {!isCollapsed && (
+            <Button
+              variant="link"
+              className="text-gray-500 hover:text-blue-700"
+            >
+              <MagnifyingGlassIcon size={18} />
+            </Button>
+          )}
         </div>
 
         <nav className="flex flex-col gap-3">
-          <SidebarItem icon={SparkleIcon} text="New Prompt" href="/home" />
-          <SidebarItem icon={CheckSquareOffsetIcon} text="Goals & Tasks" href="/goals" />
-          <SidebarItem icon={TargetIcon} text="Objectives" href="/objectives" />
-          <SidebarItem icon={NetworkIcon} text="Goal Connections" href="" />
+          <SidebarItem
+            icon={SparkleIcon}
+            text="New Prompt"
+            href="/home"
+            isCollapsed={isCollapsed}
+          />
+          <SidebarItem
+            icon={TerminalWindowIcon}
+            text="Console"
+            href="/console"
+            isCollapsed={isCollapsed}
+          />
+          <SidebarItem
+            icon={CheckSquareOffsetIcon}
+            text="Goals & Tasks"
+            href="/goals"
+            isCollapsed={isCollapsed}
+          />
+          {/* <SidebarItem icon={TargetIcon} text="Objectives" href="/objectives" />
+          <SidebarItem icon={NetworkIcon} text="Goal Connections" href="" /> */}
         </nav>
       </div>
 
@@ -38,15 +73,17 @@ export const Sidebar = () => {
             icon={GearIcon}
             text="Settings"
             href="/settings"
+            isCollapsed={isCollapsed}
           />
           <SidebarItemVariant
             icon={QuestionIcon}
             text="Help & Support"
             href="/help"
+            isCollapsed={isCollapsed}
           />
         </nav>
 
-        <LogOut />
+        <LogOut isCollapsed={isCollapsed} />
       </div>
     </section>
   );
@@ -103,16 +140,21 @@ export const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
           <nav className="flex flex-col gap-3">
             <SidebarItem icon={SparkleIcon} text="New Prompt" href="/home" />
             <SidebarItem
-              icon={SparkleIcon}
+              icon={TerminalWindowIcon}
+              text="Console"
+              href="/console"
+            />
+            <SidebarItem
+              icon={CheckSquareOffsetIcon}
               text="Goals & Tasks"
               href="/goals"
             />
-            <SidebarItem
+            {/* <SidebarItem
               icon={TargetIcon}
               text="Objectives"
               href="/objectives"
             />
-            <SidebarItem icon={NetworkIcon} text="Goal Connections" href="" />
+            <SidebarItem icon={NetworkIcon} text="Goal Connections" href="" /> */}
           </nav>
         </div>
 
