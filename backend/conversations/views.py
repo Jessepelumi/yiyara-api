@@ -45,4 +45,25 @@ class ChatAPIView(APIView):
             
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ConversationHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, goal_id):
+        # 1. Find the conversation for this goal owned by this user
+        # We take the latest one created if multiple exist
+        conversation = Conversation.objects.filter(
+            goal_id=goal_id, 
+            user=request.user
+        ).order_by('-created_at').first()
+
+        if not conversation:
+            # Return an empty list instead of 404 so the frontend doesn't break
+            return Response([], status=status.HTTP_200_OK)
+
+        # 2. Get all messages for this conversation
+        messages = conversation.messages.all().order_by('created_at')
+        serializer = MessageSerializer(messages, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
