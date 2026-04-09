@@ -1,4 +1,4 @@
-// API endpoints to decompose goals and 
+// API endpoints to decompose goals and
 // retrieve a list of stored goals with associated tasks
 
 import { apiClient } from "./client";
@@ -17,4 +17,11 @@ export const goalsApi = {
     apiClient("/list/", {
       method: "GET",
     }),
+
+  // Delete a goal
+  delete: async (id: string) => {
+    return await apiClient(`/${id}/`, {
+      method: "DELETE",
+    });
+  },
 };
