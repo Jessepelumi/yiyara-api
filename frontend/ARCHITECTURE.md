@@ -142,10 +142,17 @@ src/
 │   │   │       - Uses custom components for each cell type
 │   │   │
 │   │   ├── console/page.tsx
-│   │   │   └── AI chat console for goal refinement
-│   │   │       - useChat(goalId) hook manages conversation state
-│   │   │       - Message list showing user and AI messages
-│   │   │       - promptField.tsx for input
+│   │   │   └── Console root page (no goal selected)
+│   │   │       - Redirects to first goal's console if goals exist
+│   │   │       - Shows empty state if no goals
+│   │   │       - Provides navigation to goals page
+│   │   │
+│   │   ├── console/[id]/page.tsx
+│   │   │   └── Dynamic console page for specific goal
+│   │   │       - Fetches chat history for the goal
+│   │   │       - Displays conversation with AI
+│   │   │       - Allows sending new messages
+│   │   │       - Manages optimistic UI updates
 │   │   │
 │   │   └── objectives/page.tsx
 │   │       └── Objectives page (placeholder for future feature)
@@ -180,12 +187,13 @@ src/
 │   │   │       - Header shows goalTile with title and task count
 │   │   │       - Body contains DataTable of tasks
 │   │   │       - Toggles task visibility on click
+│   │   │       - Integrates useDeleteGoal hook for goal deletion
 │   │   │
 │   │   ├── goalTile.tsx
 │   │   │   └── Individual goal card/tile display component
 │   │   │       - Shows goal title with task badge count
-│   │   │       - Delete goal button (not yet fully implemented)
-│   │   │       - "Open in Console" button for AI chat
+│   │   │       - Delete goal button with confirmation dialog
+│   │   │       - "Open in Console" button for AI chat navigation
 │   │   │
 │   │   ├── promptField.tsx
 │   │   │   └── Reusable textarea input component for AI prompts
@@ -237,6 +245,7 @@ src/
 │           ├── label.tsx - Form label
 │           ├── separator.tsx - Divider line
 │           ├── sheet.tsx - Off-canvas panel (mobile drawer)
+│           ├── skeleton.tsx - Loading skeleton component
 │           └── table.tsx - Table component
 │
 ├── hooks/
@@ -245,6 +254,16 @@ src/
 │           - Uses useQuery to fetch goals on mount
 │           - Returns { data, isLoading, error }
 │           - Automatically caches and revalidates data
+│   └── useDeleteGoal.ts
+│       └── Custom React Query hook for deleting goals
+│           - Uses useMutation to delete a goal by ID
+│           - Invalidates goals query on success
+│           - Handles error logging
+│   └── useChat.ts
+│       └── Custom React Query hook for chat functionality
+│           - Manages conversation state and message sending
+│           - Tracks active conversation ID
+│           - Handles optimistic UI updates
 │
 ├── lib/
 │   ├── utils.ts
@@ -383,19 +402,29 @@ Pages depend on:
 ├── goals/page.tsx
 │   ├── goalAccordion.tsx (custom)
 │   │   ├── goalTile.tsx (custom)
+│   │   │   ├── Delete button with confirmation
+│   │   │   └── "Open in Console" navigation
 │   │   └── datatable.tsx (custom)
 │   │       └── taskColumns.tsx (column definitions)
 │   │           ├── tableRowTitle.tsx
 │   │           ├── statusIndicator.tsx
 │   │           └── badge.tsx (UI)
 │   ├── useGoals hook
+│   ├── useDeleteGoal hook
 │   └── sectionHeader.tsx (custom)
 │
-└── console/page.tsx
-    ├── promptField.tsx (UI)
-    ├── button.tsx (UI)
-    ├── useChat hook
-    └── sendChatMessage from lib/api/chat.ts
+├── console/page.tsx ← Root console page
+│   ├── useGoals hook (to check for goals)
+│   ├── Redirects to console/[firstGoalId] if goals exist
+│   ├── Shows empty state UI if no goals
+│   └── Navigation button to goals page
+│
+└── console/[id]/page.tsx ← Dynamic console page
+    ├── useChat hook for sending messages
+    ├── useQuery for fetching chat history
+    ├── promptField.tsx (UI) for input
+    ├── Optimistic UI updates for messages
+    └── Message list display
 ```
 
 ---
@@ -684,9 +713,26 @@ Example Flow:
   5. Component renders with DataTable
 ```
 
+**Endpoint 3: Delete Goal**
+
+```
+DELETE /{id}/
+Input: goal ID in URL path
+Output: (empty response on success)
+
+Example Flow:
+  1. User clicks delete button on goal tile
+  2. Confirmation dialog appears
+  3. User confirms deletion
+  4. useDeleteGoal() hook calls goalsApi.delete(id)
+  5. Frontend sends DELETE to /api/{id}/
+  6. Django deletes goal and associated tasks
+  7. Goals query invalidated, UI updates
+```
+
 #### Chat API (`lib/api/chat.ts`)
 
-**Endpoint: Send Chat Message**
+**Endpoint 1: Send Chat Message**
 
 ```
 POST /conversations/chat/
@@ -713,6 +759,21 @@ Example Flow:
   5. Django creates conversation and returns response
   6. conversation_id locked for future messages
   7. Subsequent messages use conversation_id
+```
+
+**Endpoint 2: Get Chat History**
+
+```
+GET /conversations/history/{goalId}/
+Input: goal ID in URL path
+Output: ChatMessage[]
+
+Example Flow:
+  1. User navigates to console/[id] page
+  2. useQuery fetches chat history for goal
+  3. Frontend sends GET to /api/conversations/history/{goalId}/
+  4. Django returns all messages for that goal's conversation
+  5. Messages displayed in chat interface
 ```
 
 #### Auth Routes (`app/api/auth/[...nextauth]/route.ts`)
@@ -766,7 +827,7 @@ Proxy returns to frontend
 
 ## Dependencies and Imports
 
-### Import Chain: Goal Display
+### Import Chain: Goal Display & Deletion
 
 ```
 goals/page.tsx (page)
@@ -776,8 +837,14 @@ goals/page.tsx (page)
   │       ├── imports goalsApi from ../../lib/api/goals
   │       │   └── lib/api/goals.ts
   │       │       ├── imports apiClient from ./client
-  │       │       └── exports decompose(), list()
+  │       │       └── exports decompose(), list(), delete()
   │       └── returns useQuery result
+  │
+  ├── imports useDeleteGoal from ../../hooks/useDeleteGoal
+  │   └── hooks/useDeleteGoal.ts
+  │       ├── imports useMutation from @tanstack/react-query
+  │       ├── imports goalsApi from ../../lib/api/goals
+  │       └── returns useMutation result with invalidation
   │
   ├── renders goalAccordion.tsx
   │   └── components/custom/goalAccordion.tsx
@@ -801,14 +868,17 @@ goals/page.tsx (page)
 ### Import Chain: AI Chat
 
 ```
-console/page.tsx (page)
+console/[id]/page.tsx (page)
   ├── imports useChat from ../../hooks/useChat
   │   └── hooks/useChat.ts
   │       ├── imports sendChatMessage from ../../lib/api/chat
   │       │   └── lib/api/chat.ts
   │       │       ├── imports apiClient from ./client
-  │       │       └── exports sendChatMessage()
+  │       │       └── exports sendChatMessage(), getChatHistory()
   │       └── returns sendChatMessage mutation and state
+  │
+  ├── imports useQuery from @tanstack/react-query
+  │   └── For fetching chat history
   │
   ├── renders promptField.tsx
   │   └── components/custom/promptField.tsx
@@ -992,7 +1062,7 @@ goals/page.tsx loads:
 │   └── Automatically fetches goals with cache
 │
 ├── While loading:
-│   └── "Loading goals..." message displayed
+│   └── Skeleton loading components displayed
 │
 ├── On success (data received):
 │   ├── goals.map(goal →
@@ -1001,7 +1071,7 @@ goals/page.tsx loads:
 │   │   │   └── goalTile.tsx
 │   │   │       ├── goal.title
 │   │   │       ├── badge showing task count
-│   │   │       ├── Delete button (not fully implemented)
+│   │   │       ├── Delete button with confirmation dialog
 │   │   │       └── "Open in Console" button
 │   │   │
 │   │   └── Body (collapsible OnClick):
@@ -1026,10 +1096,31 @@ goals/page.tsx loads:
 │       ├── Expand/collapse each goal
 │       ├── Sort tasks by any column
 │       ├── Select multiple tasks
-│       └── Click "Open in Console" to chat about goal
+│       ├── Click "Open in Console" to chat about goal
+│       └── Delete goals with confirmation
 │
 └── On error:
     └── Error message displayed
+```
+
+### 3.1 Goal Deletion Workflow
+
+**Workflow**:
+
+```
+User clicks delete button on goalTile.tsx:
+├── onClick handler prevents accordion toggle
+├── Confirmation dialog: "Are you sure you want to delete [title]?"
+├── User confirms deletion
+├── useDeleteGoal() mutation triggered
+│   ├── goalsApi.delete(id) called
+│   ├── DELETE /api/{id}/ sent to backend
+│   ├── Django deletes goal and associated tasks
+│   └── Mutation returns success
+├── React Query invalidates ['goals'] query
+│   └── useGoals() refetches data automatically
+├── UI updates with goal removed
+└── Loading state shown during deletion
 ```
 
 ### 4. AI Chat Console
@@ -1037,63 +1128,57 @@ goals/page.tsx loads:
 **Workflow**:
 
 ```
-console/page.tsx loads with [goalId] from URL params:
-├── useChat(goalId) hook initialized
-│   ├── Creates useMutation for sendChatMessage
-│   └── Initializes state: activeConversationId = null
+Console Navigation:
+├── User navigates to /console
+│   ├── console/page.tsx loads (root console page)
+│   ├── useGoals() checks if user has goals
+│   ├── If goals exist: redirect to /console/{firstGoalId}
+│   └── If no goals: show empty state with "View Goal List" button
 │
+├── User navigates to /console/{goalId} (or redirected)
+│   ├── console/[id]/page.tsx loads
+│   ├── goalId extracted from URL params
+│   ├── useQuery fetches chat history
+│   │   ├── getChatHistory(goalId) called
+│   │   ├── GET /api/conversations/history/{goalId}/
+│   │   └── Returns existing conversation messages
+│   │
 ├── Initial render:
-│   ├── Message list empty
-│   └── promptField ready for input
-│
-├── User types message:
-│   └── promptField captures text on change
-│
-├── User submits message:
-│   ├── handleSubmit() called
-│   ├── mutation.mutate(content, {
-│   │   onSuccess: (data) => {
-│   │     ├── activeConversationId = data.conversation_id
-│   │     └── Add AI message to list
-│   │   }
-│   │ })
-│   └── If first message:
-│       ├── Sent with goal_id included
-│       └── Backend creates conversation
-│
-├── First API call:
-│   ├── POST /api/conversations/chat/
-│   ├── Body: { content: string, goal_id: string }
-│   ├── Forwarded to Django
-│   ├── Django:
-│   │   ├── Validates user auth
-│   │   ├── Creates conversation
-│   │   ├── Sends message to AI
-│   │   ├── Gets AI response
-│   │   └── Returns { conversation_id, message }
-│   └── Response shows AI reply
-│
-├── Subsequent API calls:
-│   ├── POST /api/conversations/chat/
-│   ├── Body: { content: string, conversation_id: string }
-│   ├── Same flow but uses existing conversation
-│   └── Continues conversation thread
-│
-├── UI Updates:
-│   ├── User message appears in blue bubble (right)
-│   ├── AI response appears in gray bubble (left)
-│   ├── Message list auto-scrolls to bottom
-│   ├── Input field clears after submit
-│   └── New messages append to list
-│
-├── React Query on success:
-│   └── Invalidates goals query (in case AI modified tasks)
-│
+│   ├── Message list displays chat history
+│   ├── promptField ready for new messages
+│   ├── Optimistic updates prepared
+│   │
+├── User types and submits message:
+│   ├── handleSubmit() validates input
+│   ├── Creates optimistic user message
+│   ├── Adds to local message state immediately
+│   ├── useChat() mutation sends message
+│   │   ├── sendChatMessage() called
+│   │   ├── POST /api/conversations/chat/
+│   │   ├── First message: includes goal_id
+│   │   ├── Subsequent: uses conversation_id
+│   │   └── Django processes and returns AI response
+│   │
+├── Response handling:
+│   ├── Mutation success callback
+│   ├── Adds AI message to conversation
+│   ├── conversation_id locked for future messages
+│   ├── Optimistic messages filtered out
+│   ├── UI updates with new messages
+│   ├── Goals query invalidated (AI may modify tasks)
+│   │
+├── UI Features:
+│   ├── User messages: blue bubbles (right)
+│   ├── AI responses: gray bubbles (left)
+│   ├── Auto-scroll to latest message
+│   ├── Loading states during sending
+│   ├── Error handling for failed messages
+│   │
 └── User can:
-    ├── Send multiple messages
-    ├── Refine goals through conversation
-    ├── Get AI guidance
-    └── Conversation persists in database
+    ├── Send multiple messages in conversation
+    ├── Refine goals through AI dialogue
+    ├── Get guidance on task completion
+    └── Conversation persists across sessions
 ```
 
 ### 5. Sidebar Navigation
@@ -1354,11 +1439,31 @@ const [showDialog, setShowDialog] = useState(false);
 
 This architecture provides:
 
-- **Security**: JWT-based auth with NextAuth integration
+- **Security**: JWT-based auth with NextAuth integration and Django bridge
 - **Scalability**: API proxy pattern for backend flexibility
-- **Performance**: React Query caching and request deduplication
-- **User Experience**: Responsive design, smooth interactions
-- **Maintainability**: Clear separation of concerns, typed throughout
+- **Performance**: React Query caching, deduplication, and optimistic updates
+- **User Experience**: Responsive design, smooth interactions, loading states
+- **Maintainability**: Clear separation of concerns, typed throughout, modular components
 - **Developer Experience**: TypeScript, composable components, organized structure
 
 The system flows data from components → hooks → API client → Next.js proxy → Django backend, with state managed by React Query and NextAuth providing global session context.
+
+**Current Features**:
+
+- ✅ Google OAuth authentication
+- ✅ Goal creation and AI decomposition
+- ✅ Goal viewing with expandable task tables
+- ✅ Goal deletion with confirmation
+- ✅ AI chat console with conversation history
+- ✅ Responsive design with mobile support
+- ✅ Loading states and error handling
+- ✅ Optimistic UI updates for chat
+
+**Architecture Highlights**:
+
+- Clean separation between data fetching (hooks) and UI (components)
+- Centralized API client with automatic authentication
+- Proxy pattern for seamless backend integration
+- Optimistic updates for better user experience
+- Query invalidation for data consistency
+- Type-safe throughout with TypeScript
