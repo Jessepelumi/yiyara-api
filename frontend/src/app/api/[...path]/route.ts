@@ -45,6 +45,10 @@ async function proxyHandler(
       cache: "no-store",
     });
 
+    if (response.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
+
     const data = await response.text();
 
     return new NextResponse(data, {
