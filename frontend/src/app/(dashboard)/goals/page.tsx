@@ -41,6 +41,7 @@ export default function Goals() {
           goals?.map((goal) => (
             <GoalAccordion
               key={goal.id}
+              id={goal.id}
               title={goal.title}
               tasks={goal.tasks}
             />
