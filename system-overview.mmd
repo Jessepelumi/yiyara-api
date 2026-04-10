@@ -1,0 +1,64 @@
+flowchart LR
+  %% High-level system overview for Zimna
+  subgraph UserLayer[User Interaction]
+    U[User / Browser]
+  end
+
+  subgraph Frontend[Frontend Application]
+    F[Next.js + TypeScript]
+    Auth[NextAuth Authentication]
+    UI[Dashboard / Console / Goals / Objectives]
+  end
+
+  subgraph Backend[Backend Services]
+    API[Django REST Framework API]
+    WF[AI Workflow Engine]
+    Conv[Conversations Module]
+    AuthAPI[JWT / Email Auth]
+  end
+
+  subgraph AIProviders[AI Providers]
+    Gemini[Google Gemini]
+    ChatGPT[OpenAI ChatGPT]
+  end
+
+  subgraph Database[Data Layer]
+    DB[PostgreSQL (Neon)]
+    Goals[Goals / Tasks / Conversations]
+  end
+
+  subgraph Infra[Deployment]
+    Docker[Docker Compose]
+  end
+
+  U -->|interacts with| F
+  F -->|auth & session| Auth
+  F -->|REST API calls| API
+  F -->|fetches & updates| UI
+
+  API -->|auth validation| AuthAPI
+  API -->|orchestrates goal decomposition| WF
+  API -->|routes chat requests| Conv
+  API -->|reads & writes| DB
+  API -->|persists| Goals
+
+  WF -->|calls provider| Gemini
+  WF -->|calls provider| ChatGPT
+  Conv -->|contextual replies| WF
+  Conv -->|stores messages| DB
+
+  Docker --> F
+  Docker --> API
+  Docker --> DB
+  Docker --> AIProviders
+
+  classDef service fill:#f8f8f2,stroke:#6272a4,stroke-width:2px;
+  classDef provider fill:#f1fa8c,stroke:#ffb86c,stroke-width:2px;
+  classDef store fill:#50fa7b,stroke:#018f36,stroke-width:2px;
+  classDef infra fill:#8be9fd,stroke:#0181a8,stroke-width:2px;
+
+  class Frontend service;
+  class Backend service;
+  class AIProviders provider;
+  class Database store;
+  class Infra infra;
