@@ -1,28 +1,11 @@
 services:
   # Django backend for Zimna
   backend:
-    build: ./backend
+    build: .
     volumes:
-      - ./backend:/app
+      - .:/app
     ports:
       - "8000:8000"
     env_file:
       - .env
     command: python manage.py runserver 0.0.0.0:8000
-
-  # Nextjs frontend for Zimna
-  frontend:
-    build: ./frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    env_file:
-      - frontend/.env
-    environment:
-      - BASE_URL=http://backend:8000/api
-      - DJANGO_BACKEND_URL=http://backend:8000
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-    depends_on:
-      - backend
