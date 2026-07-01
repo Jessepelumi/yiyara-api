@@ -1,599 +1,491 @@
-# Zimna AI
+# Zimna Backend
 
-This documentation was created using an LLM, so I'll be making edits gradually.
+Zimna is an AI-powered life planning and goal management platform designed to help users turn long-term goals into clear, actionable steps.
 
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat&logo=docker)](https://www.docker.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+This repository contains the backend service for Zimna, built with Django and Django REST Framework. It provides REST APIs for authentication, goal management, task planning, scheduling, and AI-powered features.
 
-Zimna is an AI-powered life planning and goal management platform designed to help users turn long-term aspirations into clear, actionable steps. Using advanced AI technology, Zimna transforms vague goals into SMART (Specific, Measurable, Actionable, Realistic, Time-bound) objectives with detailed task breakdowns.
-
-## 🌟 Features
-
-- **AI-Powered Goal Processing**: Convert natural language goals into structured SMART goals
-- **Intelligent Task Generation**: Automatically break down goals into actionable, time-bound tasks
-- **Interactive Goal Console**: Real-time chat interface for goal refinement and follow-up questions
-- **Multi-Provider AI Support**: Choose between Google Gemini and OpenAI ChatGPT
-- **Persistent Conversations**: Full chat history tracking with context-aware AI responses
-- **Intent Classification**: Intelligent routing for decompose/query/chat operations
-- **Progress Tracking**: Monitor goal completion and task status with real-time updates
-- **Advanced Dashboard**: Interactive console, goal list with task expansion, and objectives overview
-- **User Authentication**: Secure email-based accounts with JWT authentication
-- **Responsive Web Interface**: Modern, mobile-friendly dashboard built with Next.js and TypeScript
-- **Docker Containerization**: Easy deployment with Docker Compose
-- **PostgreSQL Database**: Robust data storage with Neon Postgres integration
-
-## 🏗️ Architecture
-
-Zimna is built as a full-stack application with:
-
-- **Backend**: Django REST Framework with multi-provider AI integration
-  - AI Workflow Engine: Orchestrates goal decomposition and task generation
-  - Conversations Module: Manages multi-turn AI dialogues with context preservation
-  - Support for Google Gemini and OpenAI ChatGPT AI providers
-- **Frontend**: Next.js with TypeScript, React Query, and Tailwind CSS
-  - Interactive Console: Real-time goal management interface
-  - Dashboard: Goals list, objectives overview, and task management
-  - Type-safe API integration with error handling
-- **Database**: PostgreSQL (hosted on Neon)
-  - Email-based user authentication
-  - Hierarchical goal-task relationships
-  - Persistent conversation history per goal
-- **Deployment**: Docker Compose for containerized development and deployment
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Docker and Docker Compose
-- Git
-- Neon PostgreSQL account (for database)
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/your-username/zimna.git
-   cd zimna
-   ```
-
-2. **Set up environment variables**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Edit `.env` with your configuration:
-
-   ```env
-   # Database Configuration (from Neon)
-   PGHOST=your-neon-host
-   PGDATABASE=your-database-name
-   PGUSER=your-username
-   PGPASSWORD=your-password
-   PGPORT=5432
-
-   # AI Configuration
-   GEMINI_API_KEY=your-gemini-api-key
-
-   # Django Configuration
-   DEBUG=True
-   SECRET_KEY=your-django-secret-key
-   ```
-
-3. **Start the application**
-
-   ```bash
-   make build
-   make up
-   ```
-
-4. **Run database migrations**
-
-   ```bash
-   make migrate
-   ```
-
-5. **Create a superuser**
-   ```bash
-   make superuser
-   ```
-
-The application will be available at:
-
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-
-## ✨ Recent Enhancements
-
-### Interactive Console & Conversations
-
-- Real-time chat interface for goal refinement and follow-ups
-- Persistent multi-turn conversations with full history per goal
-- Intelligent intent classification (decompose/query/chat)
-
-### Multi-Provider AI Support
-
-- Seamlessly switch between Google Gemini and OpenAI ChatGPT
-- Provider-agnostic architecture for easy extensibility
-- Environment-based configuration—no code changes required
-
-### Enhanced Dashboard
-
-- **Console**: Interactive interface for active goal management
-- **Goals List**: Searchable, sortable with expandable task details
-- **Objectives Overview**: High-level progress tracking
-- Example prompts to guide new users
-
-### Advanced Frontend Stack
-
-- React Query for optimized data fetching and caching
-- React Table for feature-rich data tables with sorting/filtering
-- Type-safe API integration with comprehensive error handling
-- NextAuth integration for enterprise-grade authentication
-
-### Robust Backend
-
-- Atomic database transactions for data consistency
-- Conversation service with context-aware response routing
-- Goal decomposition workflow with automatic task generation
-- Email-based authentication with JWT tokens
-
-## 📖 Usage
-
-### Creating Goals
-
-1. Navigate to the Goals section in the dashboard
-2. Describe your goal in natural language (e.g., "I want to learn Spanish and become conversational")
-3. Zimna's AI will process your input and create:
-   - A SMART goal with clear objectives
-   - Actionable tasks with deadlines
-   - Progress tracking capabilities
-
-### Using the Interactive Console
-
-1. Navigate to the Console section to interact with a specific goal
-2. Ask follow-up questions about your goal for refinement
-3. The system supports:
-   - **Decompose Intent**: Breaks vague goals into actionable steps
-   - **Query Intent**: Retrieves relevant goals and tasks (RAG-ready)
-   - **Chat**: General contextual responses with full conversation history
-4. View complete chat history for each goal
-5. Goal and task details are automatically updated based on conversation
-
-### Managing Tasks
-
-- View all tasks associated with your goals
-- Mark tasks as completed
-- Track progress towards goal completion
-- Set due dates and priorities
-- View tasks in expandable goal cards or advanced data tables
-
-## 🛠️ Development
-
-### Available Commands
-
-```bash
-# Docker Management
-make up             # Start all containers
-make down           # Stop all containers
-make build          # Rebuild containers
-make restart        # Restart services
-make logs           # View backend logs
-
-# Django Management
-make migrate        # Run database migrations
-make superuser      # Create admin user
-make shell          # Open Django shell
-make collectstatic  # Collect static files
-
-# Cleanup
-make clean          # Remove containers and volumes (destructive)
-```
-
-### Project Structure
-
-```bash
-zimna/
-├── backend/              # Django REST API
-│   ├── config/           # Django settings & ASGI/WSGI config
-│   ├── ai/               # AI Engine Integration
-│   │   ├── providers/    # Multiple AI provider implementations
-│   │   │   ├── gemini_provider.py
-│   │   │   └── chatgpt_provider.py
-│   │   └── prompts/      # Prompt templates
-│   │       └── goal_decomposition_prompt.py
-│   ├── workflow/         # AI orchestration engine
-│   │   └── ai_engine.py  # Goal decomposition workflow
-│   ├── goals/            # Goal management app
-│   ├── tasks/            # Task management app
-│   ├── conversations/    # Chat & messaging module
-│   │   ├── models.py     # Conversation & Message models
-│   │   ├── services.py   # AI intent routing logic
-│   │   ├── views.py      # Chat API endpoints
-│   │   └── serializers.py
-│   ├── users/            # User authentication & management
-│   ├── requirements.txt   # Python dependencies
-│   └── manage.py
-├── frontend/             # Next.js application
-│   ├── src/
-│   │   ├── app/          # Next.js app router with route groups
-│   │   │   ├── (auth)/   # Authentication routes (login)
-│   │   │   └── (dashboard)/
-│   │   │       ├── console/      # ⭐ Interactive goal console
-│   │   │       ├── goals/        # Goals list & management
-│   │   │       ├── objectives/   # Objectives overview
-│   │   │       └── home/         # Dashboard home
-│   │   ├── components/   # Reusable UI components
-│   │   │   ├── custom/
-│   │   │   │   ├── goalAccordion.tsx    # Expandable goal cards
-│   │   │   │   ├── goalTile.tsx         # Goal card display
-│   │   │   │   ├── sidebar.tsx          # Navigation sidebar
-│   │   │   │   ├── statusIndicator.tsx  # Status badges
-│   │   │   │   ├── datatable.tsx        # Advanced data table
-│   │   │   │   └── examplePrompt.tsx    # Example goal prompts
-│   │   │   ├── providers/        # Context providers
-│   │   │   └── ui/               # shadcn/ui components
-│   │   ├── hooks/                # Custom React hooks
-│   │   │   ├── useChat.ts        # Chat state management
-│   │   │   ├── useGoals.ts       # Goals data fetching
-│   │   │   └── useDeleteGoal.ts  # Goal deletion logic
-│   │   ├── lib/                  # Utilities & API helpers
-│   │   ├── static/               # Static data
-│   │   │   └── examplePrompts.tsx # Pre-built example goals
-│   │   └── types/                # TypeScript type definitions
-│   ├── ARCHITECTURE.md   # Comprehensive frontend documentation
-│   ├── package.json      # Node.js dependencies
-│   └── next.config.ts    # Next.js configuration
-├── docs/                 # Documentation & guides
-│   └── guides/
-│       ├── ai-configuration.md   # AI provider setup guide
-│       ├── neon.md               # Database configuration
-│       ├── deployment.md
-│       ├── development.md
-│       └── setup.md
-├── docker-compose.yml    # Multi-container orchestration
-├── Makefile              # Development commands
-└── README.md
-```
-
-### Backend Development
-
-The backend is built with Django and Django REST Framework. Key components:
-
-**AI Engine & Workflow** (`backend/workflow/` & `backend/ai/`):
-
-- **{ZimnaWorkflow}** class: Orchestrates full goal decomposition pipeline
-  - Natural language to SMART goal conversion
-  - Atomic database transactions for consistency
-  - Automatic task and conversation generation
-  - Multi-provider AI support (Gemini, ChatGPT)
-- **AI Providers**: Abstracted provider interface
-  - Google Gemini provider with intent classification
-  - OpenAI ChatGPT provider (alternative option)
-  - Extensible for future AI integrations
-- **Prompt Templates**: Goal decomposition and intent classification prompts
-
-**Conversations Module** (`backend/conversations/`):
-
-- **Message Routing**: Intelligent intent classification system
-  - **DECOMPOSE**: Breaks vague goals into actionable steps
-  - **QUERY**: Retrieves relevant goals/tasks (RAG-ready architecture)
-  - **DEFAULT**: Contextual conversational responses with history
-- **Persistent Chat**: Full message threading per goal
-  - `Conversation` model: Links chat sessions to goals
-  - `Message` model: Role-based messages (user/assistant/system)
-- **Chat API**: Stateful endpoints for real-time conversations
-
-**Authentication & Users**:
-
-- Email-based user authentication (not username)
-- JWT tokens for secure API access
-- User model enhanced with verification and demographics
-
-**Database**:
-
-- PostgreSQL with Django ORM
-- Hierarchical relationships: User → Goal → Task → Messages
-- Indexed fields for optimal query performance
-
-### Frontend Development
-
-The frontend uses modern React patterns with Next.js and TypeScript:
-
-**Technology Stack**:
-
-- **Next.js 16**: App router with route groups and server components
-- **TypeScript**: Comprehensive type safety
-- **Tailwind CSS**: Utility-first styling with modern PostCSS
-- **React Query (TanStack Query)**: Server state management and caching
-- **React Table (TanStack Table)**: Advanced data table features
-- **shadcn/ui**: Accessible component library built on Radix UI
-- **Phosphor Icons** + **Lucide Icons**: Consistent iconography
-- **NextAuth**: Authentication with Django backend integration
-
-**Key Pages & Features**:
-
-- **Console** (`/dashboard/console`): Interactive real-time chat interface for active goal management
-- **Goals** (`/dashboard/goals`): List view with expandable task details using accordion component
-- **Objectives** (`/dashboard/objectives`): Overview and analytics page (future expansion)
-- **Home** (`/dashboard/home`): Landing with example prompts and goal input helper
-
-**Custom Hooks**:
-
-- `{useChat}`: Chat state management with API communication
-- `{useGoals}`: Fetch and cache user's goals with React Query
-- `{useDeleteGoal}`: Deletion logic with optimistic updates
-
-**Advanced Components**:
-
-- `{goalAccordion}`: Expandable goal cards with nested tasks
-- `{datatable}`: Advanced table for goals/tasks with sorting and filtering
-- `{statusIndicator}`: Visual status badges for tasks/goals
-- `{promptField}`: Specialized input for natural language prompts
-- `{examplePrompt}`: Interactive example goal cards
-
-**State Management**:
-
-- React Query for server state (goals, tasks, conversations)
-- Local state for UI interactions and forms
-- NextAuth for authentication state
-
-**API Integration**:
-
-- Type-safe fetch utilities in `lib/api/`
-- Error handling and retry logic
-- Request/response interceptors for authentication
-
-## 🤖 AI Integration
-
-Zimna features advanced AI capabilities with multi-provider support:
-
-**Goal Decomposition Pipeline**:
-
-1. **Natural Language Processing**: Understands vague goal descriptions
-2. **SMART Goal Conversion**: Transforms inputs into Specific, Measurable, Actionable, Realistic, Time-bound goals
-3. **Task Breakdown**: Generates detailed, actionable tasks with deadlines
-4. **Date Intelligence**: Converts relative dates ("next week") to absolute dates
-
-**Multi-Provider AI Support**:
-
-- **Google Gemini** (Primary): Advanced language understanding and structured output
-- **OpenAI ChatGPT** (Alternative): Flexible NLP with chat capabilities
-- **Abstracted Provider Interface**: Easy switching and extensibility
-- Configure via environment variables (`GEMINI_API_KEY` or `OPENAI_API_KEY`)
-
-**Intent Classification System**:
-
-- Automatically routes requests to appropriate handlers:
-  - **Goal Decomposition**: Breaks down vague goals into structured steps
-  - **Query Processing**: Retrieves relevant goals and tasks (RAG-ready)
-  - **Conversational Response**: Context-aware answers using chat history
-- Enables smarter, more contextual interactions
-
-**Conversation Context**:
-
-- Full chat history preservation per goal
-- Multi-turn dialogue support
-- System messages for context and guardrails
-- Atomic operations ensure data consistency
-
-## 📊 API Documentation
-
-### Authentication Endpoints
-
-- `POST /api/auth/login/` - User login with email
-- `POST /api/auth/register/` - User registration
-- `POST /api/auth/refresh/` - Token refresh
-
-### Goal Management Endpoints
-
-- `GET /api/goals/` - List user's goals with nested tasks
-- `POST /api/goals/` - Create new goal manually
-- `POST /api/decompose/` - ⭐ Convert natural language to SMART goals and tasks (AI-powered)
-- `GET /api/goals/{id}/` - Get specific goal with all details
-- `PUT /api/goals/{id}/` - Update goal
-- `DELETE /api/goals/{id}/` - Delete goal and related data
-
-### Task Endpoints
-
-- `GET /api/tasks/` - List user's tasks
-- `POST /api/tasks/` - Create new task
-- `GET /api/tasks/{id}/` - Get specific task
-- `PUT /api/tasks/{id}/` - Update task
-- `DELETE /api/tasks/{id}/` - Delete task
-
-### Conversation & Chat Endpoints
-
-- `POST /api/conversations/chat/` - ⭐ Send message to AI assistant
-  - Auto-creates conversation linked to goal
-  - Supports intent routing (decompose/query/chat)
-  - Returns AI response with context
-- `GET /api/conversations/history/{goal_id}/` - Retrieve full chat history for a goal
-  - Returns all messages with roles (user/assistant/system)
-  - Enables context reconstruction for follow-ups
-
-### Response Features
-
-- **Error Handling**: Clarification prompts when AI needs more information
-- **Contextual Responses**: AI uses full chat history for intelligent replies
-- **Automatic Record Creation**: Goals and tasks created atomically from conversations
-- **Intent Classification**: Routing for decomposition, queries, and general chat
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable              | Description                               | Required                   | Default                 |
-| --------------------- | ----------------------------------------- | -------------------------- | ----------------------- |
-| `PGHOST`              | PostgreSQL host                           | Yes                        | -                       |
-| `PGDATABASE`          | Database name                             | Yes                        | -                       |
-| `PGUSER`              | Database username                         | Yes                        | -                       |
-| `PGPASSWORD`          | Database password                         | Yes                        | -                       |
-| `PGPORT`              | Database port                             | Yes                        | 5432                    |
-| `GEMINI_API_KEY`      | Google Gemini API key (or use ChatGPT)    | Conditional (one required) | -                       |
-| `OPENAI_API_KEY`      | OpenAI ChatGPT API key                    | Conditional                | -                       |
-| `AI_PROVIDER`         | Active AI provider (`gemini` or `openai`) | No                         | `gemini`                |
-| `DEBUG`               | Django debug mode                         | No                         | False                   |
-| `SECRET_KEY`          | Django secret key                         | Yes                        | -                       |
-| `ALLOWED_HOSTS`       | Comma-separated allowed hosts             | No                         | `localhost`             |
-| `NEXT_PUBLIC_API_URL` | Frontend API base URL                     | No                         | `http://localhost:8000` |
-| `BASE_URL`            | Backend service URL                       | No                         | `http://backend:8000`   |
-
-### AI Provider Configuration
-
-**Google Gemini** (Default):
-
-```bash
-GEMINI_API_KEY=your-gemini-api-key
-AI_PROVIDER=gemini
-```
-
-**OpenAI ChatGPT**:
-
-```bash
-OPENAI_API_KEY=your-openai-api-key
-AI_PROVIDER=openai
-```
-
-Switching between providers doesn't require any code changes—configure via environment variables.
-
-## 🏛️ Architecture Patterns & Design
-
-### Key Architectural Decisions
-
-**Atomic Database Transactions**:
-
-- Goal creation in `ZimnaWorkflow` is transactional
-- Ensures Goal + Tasks + Conversation all succeed or all fail
-- Prevents orphaned records on failure
-- Maintains data consistency across AI-driven operations
-
-**Intent Classification**:
-
-- Router service distinguishes between request types:
-  - **Decompose**: Convert goals to tasks (primary workflow)
-  - **Query**: Retrieve relevant goals/tasks (RAG foundation)
-  - **Chat**: Contextual responses using history
-- Enables intelligent request routing without separate endpoints
-
-**Multi-Provider Abstraction**:
-
-- Provider interface allows easy switching between AI services
-- Each provider implements consistent contract (class methods)
-- Config-based selection (no code changes needed)
-- Extensible for future AI providers
-
-**Conversation-as-Context**:
-
-- Every message links to a goal
-- Full message history enables follow-ups without re-context
-- System messages provide guardrails
-- Audit trail of goal evolution
-
-**Type-Safe Frontend**:
-
-- Comprehensive TypeScript types throughout
-- NextAuth for type-safe authentication
-- React Query for typed API responses
-- Catch errors at compile time
-
-**Stateful Conversations**:
-
-- Chat state managed with `useChat` hook
-- Optimistic updates for better UX
-- Persistent history per goal
-- Context-aware AI responses
-
-### Database Relationships
-
-```
-User
-├── Goal (with raw_input, created_at, updated_at)
-│   ├── Task (with due_date, completed, created_at)
-│   └── Conversation
-│       └── Message[] (role: user/assistant/system)
-```
-
-All relationships are lazy-loaded and indexed for performance.
-
-## 🚀 Deployment
-
-### Production Build
-
-1. **Build frontend**
-
-   ```bash
-   cd frontend
-   npm run build
-   ```
-
-2. **Configure production environment**
-   - Set `DEBUG=False`
-   - Configure production database
-   - Set secure `SECRET_KEY`
-
-3. **Deploy with Docker**
-   ```bash
-   docker-compose -f docker-compose.yml up -d
-   ```
-
-### Environment Setup
-
-For production deployment, ensure:
-
-- SSL/TLS certificates configured
-- Environment variables secured
-- Database backups configured
-- Monitoring and logging set up
-
-## 📚 Comprehensive Documentation
-
-Zimna includes detailed guides for various aspects:
-
-- **[AI Configuration Guide](docs/guides/ai-configuration.md)**: Setup and switching between Google Gemini and OpenAI ChatGPT
-- **[Frontend Architecture](frontend/ARCHITECTURE.md)**: In-depth guide covering routes, components, auth flow, state management, and API integration
-- **[Neon Database Setup](docs/guides/neon.md)**: PostgreSQL configuration and connection pooling
-- **[Development Guide](docs/guides/development.md)**: Local development workflow and best practices
-- **[Deployment Guide](docs/guides/deployment.md)**: Production setup and considerations
-- **[Setup Guide](docs/guides/setup.md)**: Initial project setup
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 for Python code
-- Use TypeScript for frontend code
-- Write tests for new features
-- Update documentation for API changes
-- Ensure Docker compatibility
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Google Gemini & OpenAI** for advanced AI capabilities with multi-provider support
-- **Django & DRF** for robust and scalable backend framework
-- **Next.js** for modern frontend and server-side rendering capabilities
-- **React Query (TanStack Query)** for powerful server state management
-- **shadcn/ui & Radix UI** for accessible component primitives
-- **Neon** for managed PostgreSQL hosting with connection pooling
-- **NextAuth** for seamless authentication integration
-
-## 📞 Support
-
-For support, please open an issue on GitHub or contact the maintainers.
+For a detailed architectural overview of how the backend components connect and work together, see [backend.md](backend.md).
 
 ---
 
-**Zimna AI** - Transform your aspirations into achievements.
+## 🚀 Features
+
+- User authentication and authorization via JWT
+- Goal creation and management with AI-powered SMART goal breakdown
+- Task generation and tracking
+- Smart planning and scheduling using Google Gemini AI
+- Progress tracking
+- PostgreSQL database integration
+- CORS support for frontend integration
+- Conversational AI chat interface for goal refinement
+
+---
+
+## 🛠 Tech Stack
+
+- **Python** - Backend language
+- **Django** - Web framework
+- **Django REST Framework** - API framework
+- **PostgreSQL** - Database
+- **Google Generative AI (Gemini)** - AI for goal decomposition and chat
+- **JWT Authentication** - Token-based auth via `rest_framework_simplejwt`
+- **Docker** - Containerization
+
+---
+
+For a complete backend architecture and integration guide, see [backend.md](backend.md).
+
+Task (tasks.Task)
+├── id (UUID)
+├── goal (ForeignKey → Goal)
+├── title, description
+├── due_date, is_completed
+└── created_at, updated_at
+
+Conversation (conversations.Conversation)
+├── id (UUID)
+├── goal (ForeignKey → Goal)
+├── user (ForeignKey → User)
+├── created_at, updated_at
+└── messages (related_name)
+
+Message (conversations.Message)
+├── id (UUID)
+├── conversation (ForeignKey → Conversation)
+├── role (user/assistant/system)
+├── content (text)
+└── created_at
+```
+
+### API Endpoints
+
+#### Authentication (`/api/users/`)
+- `POST /api/users/auth/bridge/` — Exchange verified email for JWT tokens
+
+#### Goals (`/api/`)
+- `POST /api/decompose/` — AI-powered goal creation from raw text
+- `GET /api/list/` — Fetch user's goals with nested tasks
+
+#### Conversations (`/api/conversations/`)
+- `POST /api/conversations/chat/` — Send message and get AI response
+
+#### Admin
+- `/admin/` — Django admin interface
+
+### Key Workflows
+
+#### 1. User Authentication Flow
+1. Frontend authenticates user (NextAuth)
+2. Frontend calls `POST /api/users/auth/bridge/` with verified email
+3. Backend creates/finds `User` record
+4. Backend returns JWT access + refresh tokens
+5. Frontend uses JWT for subsequent API calls
+
+#### 2. Goal Creation Flow
+1. User submits raw text (e.g., "I want to get fit and lose weight")
+2. Frontend calls `POST /api/decompose/` with JWT auth
+3. `DecomposeGoalView` receives request
+4. Calls `ZimnaWorkflow.create_goals_from_ai(user, raw_text)`
+5. `ZimnaWorkflow` builds prompt using `DECOMPOSITION_SYSTEM_PROMPT`
+6. Calls `GeminiProvider.generate_structured_response()` for JSON parsing
+7. Parses AI response into goal/task data structures
+8. Creates `Goal` and `Task` records in database transaction
+9. Returns created goals with nested tasks
+
+#### 3. Goal Listing Flow
+1. Frontend calls `GET /api/list/` with JWT auth
+2. `GoalListView` fetches user's goals with `prefetch_related('tasks')`
+3. `GoalSerializer` nests `TaskSerializers` for each goal
+4. Returns goals + tasks in single API response
+
+#### 4. Chat/Conversation Flow
+1. User sends message with `goal_id` or `conversation_id`
+2. Frontend calls `POST /api/conversations/chat/`
+3. `ChatAPIView` ensures `Conversation` exists for goal/user
+4. Calls `handle_zimna_logic(user, conversation, raw_text)`
+5. Saves user message to database
+6. Calls `GeminiProvider.classify_intent()` to determine: DECOMPOSE/QUERY/CHAT
+7. **If DECOMPOSE:** Calls `ZimnaWorkflow.create_goals_from_ai()` (same as above)
+8. **If QUERY:** Returns placeholder (RAG logic pending)
+9. **If CHAT:** Builds conversation history, calls `GeminiProvider.generate_response()`
+10. Saves AI message and returns it
+
+### AI Integration Details
+
+#### `workflow/ai_engine.py` - ZimnaWorkflow
+- Main AI orchestration class
+- `create_goals_from_ai()`: Core method for goal decomposition
+- Uses `GeminiProvider` for structured JSON responses
+- Handles database persistence in atomic transactions
+
+#### `ai/providers/gemini_provider.py` - GeminiProvider
+- Google Gemini API wrapper
+- `generate_structured_response()`: Returns JSON for goal parsing
+- `generate_response()`: Free-form chat responses
+- `classify_intent()`: Classifies user input as DECOMPOSE/QUERY/CHAT
+
+#### `ai/prompts/goal_decomposition_prompt.py`
+- System prompt for SMART goal breakdown
+- Defines JSON schema for AI responses
+
+### Configuration (`config/settings.py`)
+- Enables apps: `users`, `goals`, `tasks`, `conversations`
+- Sets `AUTH_USER_MODEL = 'users.User'`
+- Configures DRF with JWT authentication
+- Enables CORS for frontend origins
+- PostgreSQL database via environment variables
+
+### URL Routing (`config/urls.py`)
+- `/admin/` → Django admin
+- `/test/` → Health check
+- `/api/users/` → User auth endpoints
+- `/api/` → Goal endpoints
+- `/api/conversations/` → Chat endpoints
+
+---
+
+## 🔧 Setup & Development
+
+### Prerequisites
+- Python 3.10+
+- PostgreSQL
+- Google Gemini API key
+
+### Environment Variables
+```bash
+# Database
+PGHOST=your_postgres_host
+PGDATABASE=your_database_name
+PGUSER=your_db_user
+PGPASSWORD=your_db_password
+PGPORT=5432
+
+# AI
+GEMINI_API_KEY=your_gemini_api_key
+
+# Auth
+INTERNAL_AUTH_SECRET=your_internal_secret
+```
+
+### Installation
+```bash
+# Clone repository
+git clone <repository-url>
+cd zimna-backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Run development server
+python manage.py runserver
+```
+
+### Docker
+```bash
+# Build and run with Docker
+docker build -t zimna-backend .
+docker run -p 8000:8000 zimna-backend
+```
+
+### Testing AI Features
+```bash
+# Test goal decomposition via management command
+python manage.py smartify "I want to learn Python and build a web app"
+```
+
+---
+
+## 📊 API Usage Examples
+
+### Authentication
+```bash
+# Get JWT tokens
+curl -X POST http://localhost:8000/api/users/auth/bridge/ \
+  -H "Content-Type: application/json" \
+  -H "X-Internal-Secret: your_secret" \
+  -d '{"email": "user@example.com"}'
+```
+
+### Goal Creation
+```bash
+# Decompose raw text into SMART goals
+curl -X POST http://localhost:8000/api/decompose/ \
+  -H "Authorization: Bearer <jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "I want to get fit and lose 10 pounds"}'
+```
+
+### Chat Interaction
+```bash
+# Send message in goal context
+curl -X POST http://localhost:8000/api/conversations/chat/ \
+  -H "Authorization: Bearer <jwt_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "How should I start?", "goal_id": "uuid-here"}'
+```
+
+---
+
+## 🔄 Development Workflow
+
+1. **Authentication**: Users authenticate via external service, backend provides JWT
+2. **Goal Creation**: Raw text → AI decomposition → SMART goals + tasks
+3. **Task Management**: Tasks are created automatically, tracked via goals
+4. **Conversations**: Goal-specific chat with AI intent classification
+5. **Progress Tracking**: Goals and tasks have completion status
+
+---
+
+## 🚀 Deployment
+
+The application is containerized with Docker and designed for deployment to cloud platforms supporting Django applications.
+
+### Key Dependencies
+- PostgreSQL for data persistence
+- Google Gemini API for AI features
+- Redis (planned) for caching and session management
+
+---
+
+## 🤝 Contributing
+
+1. Follow Django best practices
+2. Write tests for new features
+3. Update documentation
+4. Use meaningful commit messages
+
+---
+
+## 📝 Notes
+
+- Tasks are currently managed through goals (no direct task API endpoints)
+- ChatGPT provider is scaffolded but not implemented
+- RAG (Retrieval-Augmented Generation) for goal queries is planned
+- Progress tracking UI and advanced scheduling features are in development
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py             # Goal API endpoints
+│   ├── views.py            # Goal views including AI decomposition
+│   ├── management/
+│   │   └── commands/
+│   │       └── smartify.py # Management command for AI goal processing
+│   └── migrations/         # Database migrations
+│
+├── tasks/                  # Task management app
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py           # Task model linked to goals
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── views.py
+│   └── migrations/
+│
+├── users/                  # Custom user management app
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py           # Custom User model with email auth
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── views.py
+│   └── migrations/
+│
+├── workflow/               # AI workflow module
+│   ├── __init__.py
+│   └── ai_engine.py        # Google Gemini integration for goal processing
+│
+├── templates/              # HTML templates
+│   └── test.html
+│
+├── manage.py               # Django management script
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Docker configuration
+├── memory_test.py          # Memory testing script
+└── README.md               # This file
+```
+
+---
+
+## ⚙️ Local Development Setup
+
+Follow the steps below to set up the backend locally.
+
+### Prerequisites
+
+- Python 3.8+
+- PostgreSQL database
+- Google Gemini API key
+
+### 1. Clone and Navigate to Project Directory
+
+```bash
+git clone <repository-url>
+cd zimna-backend
+```
+
+### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database Configuration
+PGHOST=localhost
+PGDATABASE=zimna_db
+PGUSER=your_db_user
+PGPASSWORD=your_db_password
+PGPORT=5432
+
+# AI Configuration
+GEMINI_API_KEY=your-google-gemini-api-key
+```
+
+### 4. Database Setup
+
+Ensure PostgreSQL is running and create the database:
+
+```bash
+createdb zimna_db
+```
+
+### 5. Run Migrations
+
+```bash
+python manage.py migrate
+```
+
+### 6. Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Run Development Server
+
+```bash
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000/`
+
+### 8. Test AI Functionality
+
+You can test the AI goal decomposition using the management command:
+
+```bash
+python manage.py smartify "I want to learn Python and build a web app"
+```
+
+---
+
+## 🐳 Docker Setup (Alternative)
+
+If you prefer using Docker:
+
+```bash
+# Build the image
+docker build -t zimna-backend .
+
+# Run the container
+docker run -p 8000:8000 --env-file .env zimna-backend
+```
+
+---
+
+## 📡 API Endpoints
+
+### Goals API
+
+- `POST /api/decompose/` - Decompose user input into SMART goals and tasks using AI
+
+### Authentication
+
+- Basic authentication is currently implemented
+- JWT authentication planned for future releases
+
+### Admin Interface
+
+- Access Django admin at `http://localhost:8000/admin/`
+
+---
+
+## 🧪 Testing
+
+Run tests for all apps:
+
+```bash
+python manage.py test
+```
+
+---
+
+## 📈 Roadmap
+
+### Phase 1 — Core Backend (Current)
+
+- ✅ User authentication
+- ✅ Goals API with AI decomposition
+- ✅ Task management
+- ✅ PostgreSQL integration
+- ✅ Google Gemini AI integration
+- Basic planner functionality
+
+### Phase 2 — Intelligence (In Progress)
+
+- Enhanced AI task breakdown
+- Smart rescheduling
+- Productivity profiling
+- Advanced analytics
+
+### Phase 3 — Platform (Planned)
+
+- JWT authentication
+- Team collaboration
+- Accountability features
+- Analytics dashboard
+- Mobile app API
+
+---
+
+## 🤝 Contribution
+
+This project is currently under active development. Feedback, issues, and suggestions are welcome.
+
+### Development Guidelines
+
+1. Follow Django best practices
+2. Write tests for new features
+3. Use meaningful commit messages
+4. Update documentation for API changes
+
+---
+
+## 📄 License
+
+This project is private and proprietary. All rights reserved.
+
+---
+
+## ✨ Author
+
+Built by Jesse Adesina as part of Zimna AI platform.
