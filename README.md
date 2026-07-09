@@ -1,8 +1,8 @@
-# Zimna Backend
+# Yiyara Backend
 
-Zimna is an AI-powered life planning and goal management platform designed to help users turn long-term goals into clear, actionable steps.
+Yiyara is an AI-powered life planning and goal management platform designed to help users turn long-term goals into clear, actionable steps.
 
-This repository contains the backend service for Zimna, built with Django and Django REST Framework. It provides REST APIs for authentication, goal management, task planning, scheduling, and AI-powered features.
+This repository contains the backend service for Yiyara, built with Django and Django REST Framework. It provides REST APIs for authentication, goal management, task planning, scheduling, and AI-powered features.
 
 For a detailed architectural overview of how the backend components connect and work together, see [backend.md](backend.md).
 
@@ -55,7 +55,8 @@ Message (conversations.Message)
 ├── role (user/assistant/system)
 ├── content (text)
 └── created_at
-```
+
+````
 
 ### API Endpoints
 
@@ -165,13 +166,14 @@ GEMINI_API_KEY=your_gemini_api_key
 
 # Auth
 INTERNAL_AUTH_SECRET=your_internal_secret
-```
+````
 
 ### Installation
+
 ```bash
 # Clone repository
 git clone <repository-url>
-cd zimna-backend
+cd yiyara-api
 
 # Create virtual environment
 python -m venv venv
@@ -191,13 +193,15 @@ python manage.py runserver
 ```
 
 ### Docker
+
 ```bash
 # Build and run with Docker
-docker build -t zimna-backend .
-docker run -p 8000:8000 zimna-backend
+docker build -t yiyara-api .
+docker run -p 8000:8000 yiyara-api
 ```
 
 ### Testing AI Features
+
 ```bash
 # Test goal decomposition via management command
 python manage.py smartify "I want to learn Python and build a web app"
@@ -208,6 +212,7 @@ python manage.py smartify "I want to learn Python and build a web app"
 ## 📊 API Usage Examples
 
 ### Authentication
+
 ```bash
 # Get JWT tokens
 curl -X POST http://localhost:8000/api/users/auth/bridge/ \
@@ -217,6 +222,7 @@ curl -X POST http://localhost:8000/api/users/auth/bridge/ \
 ```
 
 ### Goal Creation
+
 ```bash
 # Decompose raw text into SMART goals
 curl -X POST http://localhost:8000/api/decompose/ \
@@ -226,6 +232,7 @@ curl -X POST http://localhost:8000/api/decompose/ \
 ```
 
 ### Chat Interaction
+
 ```bash
 # Send message in goal context
 curl -X POST http://localhost:8000/api/conversations/chat/ \
@@ -251,6 +258,7 @@ curl -X POST http://localhost:8000/api/conversations/chat/ \
 The application is containerized with Docker and designed for deployment to cloud platforms supporting Django applications.
 
 ### Key Dependencies
+
 - PostgreSQL for data persistence
 - Google Gemini API for AI features
 - Redis (planned) for caching and session management
@@ -272,48 +280,49 @@ The application is containerized with Docker and designed for deployment to clou
 - ChatGPT provider is scaffolded but not implemented
 - RAG (Retrieval-Augmented Generation) for goal queries is planned
 - Progress tracking UI and advanced scheduling features are in development
-│   ├── serializers.py
-│   ├── tests.py
-│   ├── urls.py             # Goal API endpoints
-│   ├── views.py            # Goal views including AI decomposition
-│   ├── management/
-│   │   └── commands/
-│   │       └── smartify.py # Management command for AI goal processing
-│   └── migrations/         # Database migrations
-│
-├── tasks/                  # Task management app
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py           # Task model linked to goals
-│   ├── serializers.py
-│   ├── tests.py
-│   ├── views.py
-│   └── migrations/
-│
-├── users/                  # Custom user management app
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py           # Custom User model with email auth
-│   ├── serializers.py
-│   ├── tests.py
-│   ├── views.py
-│   └── migrations/
-│
-├── workflow/               # AI workflow module
-│   ├── __init__.py
-│   └── ai_engine.py        # Google Gemini integration for goal processing
-│
-├── templates/              # HTML templates
-│   └── test.html
-│
-├── manage.py               # Django management script
-├── requirements.txt        # Python dependencies
-├── Dockerfile              # Docker configuration
-├── memory_test.py          # Memory testing script
-└── README.md               # This file
-```
+  │ ├── serializers.py
+  │ ├── tests.py
+  │ ├── urls.py # Goal API endpoints
+  │ ├── views.py # Goal views including AI decomposition
+  │ ├── management/
+  │ │ └── commands/
+  │ │ └── smartify.py # Management command for AI goal processing
+  │ └── migrations/ # Database migrations
+  │
+  ├── tasks/ # Task management app
+  │ ├── **init**.py
+  │ ├── admin.py
+  │ ├── apps.py
+  │ ├── models.py # Task model linked to goals
+  │ ├── serializers.py
+  │ ├── tests.py
+  │ ├── views.py
+  │ └── migrations/
+  │
+  ├── users/ # Custom user management app
+  │ ├── **init**.py
+  │ ├── admin.py
+  │ ├── apps.py
+  │ ├── models.py # Custom User model with email auth
+  │ ├── serializers.py
+  │ ├── tests.py
+  │ ├── views.py
+  │ └── migrations/
+  │
+  ├── workflow/ # AI workflow module
+  │ ├── **init**.py
+  │ └── ai_engine.py # Google Gemini integration for goal processing
+  │
+  ├── templates/ # HTML templates
+  │ └── test.html
+  │
+  ├── manage.py # Django management script
+  ├── requirements.txt # Python dependencies
+  ├── Dockerfile # Docker configuration
+  ├── memory_test.py # Memory testing script
+  └── README.md # This file
+
+````
 
 ---
 
@@ -331,8 +340,8 @@ Follow the steps below to set up the backend locally.
 
 ```bash
 git clone <repository-url>
-cd zimna-backend
-```
+cd yiyara-api
+````
 
 ### 2. Install Dependencies
 
@@ -351,7 +360,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Database Configuration
 PGHOST=localhost
-PGDATABASE=zimna_db
+PGDATABASE=yiyara_db
 PGUSER=your_db_user
 PGPASSWORD=your_db_password
 PGPORT=5432
@@ -365,7 +374,7 @@ GEMINI_API_KEY=your-google-gemini-api-key
 Ensure PostgreSQL is running and create the database:
 
 ```bash
-createdb zimna_db
+creatdb yiyara_db
 ```
 
 ### 5. Run Migrations
@@ -404,10 +413,10 @@ If you prefer using Docker:
 
 ```bash
 # Build the image
-docker build -t zimna-backend .
+docker build -t yiyara-api .
 
 # Run the container
-docker run -p 8000:8000 --env-file .env zimna-backend
+docker run -p 8000:8000 --env-file .env yiyara-api
 ```
 
 ---
@@ -488,4 +497,4 @@ This project is private and proprietary. All rights reserved.
 
 ## ✨ Author
 
-Built by Jesse Adesina as part of Zimna AI platform.
+Built by Jesse Adesina as part of Yiyara AI platform.
