@@ -1,6 +1,6 @@
 # Local Development Setup
 
-This guide provides advanced setup instructions beyond the basic Quick Start in the main README. Ensure you've completed the [Quick Start](../README.md#quick-start) before proceeding.
+This guide provides advanced setup instructions beyond the basic Quick Start in the main README. Ensure you've completed the [Quick Start](../../README.md) before proceeding.
 
 ## Environment Configuration Details
 

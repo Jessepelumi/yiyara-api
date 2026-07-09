@@ -1,10 +1,10 @@
 # AI Configuration Guide
 
-This guide explains how to configure AI providers for the Zimna project.
+This guide explains how to configure AI providers for the Yiyara project.
 
 ## Supported AI Providers
 
-Zimna currently supports:
+Yiyara currently supports:
 
 - Google Gemini (primary)
 - OpenAI ChatGPT (alternative)
@@ -53,7 +53,7 @@ OPENAI_API_KEY=your-openai-api-key-here
 
 ### 3. Switch Provider (if needed)
 
-Currently, the system defaults to Gemini. To use ChatGPT, modify the AI engine configuration in `backend/workflow/ai_engine.py`.
+Currently, the system defaults to Gemini. To use ChatGPT, modify the AI engine configuration in `workflow/ai_engine.py`.
 
 ## Testing AI Features
 

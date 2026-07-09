@@ -1,6 +1,6 @@
 # API Documentation
 
-This guide documents the Zimna REST API endpoints.
+This guide documents the Yiyara REST API endpoints.
 
 ## Base URL
 

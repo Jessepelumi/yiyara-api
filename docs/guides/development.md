@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide provides information for developers contributing to the Zimna project.
+This guide provides information for developers contributing to the Yiyara project.
 
 ## Development Setup
 
@@ -8,7 +8,7 @@ Follow the [Local Development Setup](setup.md) guide.
 
 ## Project Structure
 
-See the [backend README](../backend/README.md#project-structure) for detailed project structure.
+See the [README](../../README.md) for detailed project structure.
 
 ## Coding Standards
 
@@ -88,15 +88,15 @@ All API endpoints require authentication. Use `permissions.IsAuthenticated` for 
 
 ### Adding New Providers
 
-1. Create provider class in `backend/ai/providers/`
+1. Create provider class in `ai/providers/`
 2. Implement required methods
-3. Update `ai_engine.py` to support new provider
+3. Update `workflow/ai_engine.py` to support new provider
 4. Add environment configuration
 
 ### Modifying AI Behavior
 
-- Prompts are in `backend/ai/prompts/`
-- Workflow logic in `backend/workflow/ai_engine.py`
+- Prompts are in `ai/prompts/`
+- Workflow logic in `workflow/ai_engine.py`
 - Test AI responses thoroughly
 
 ## Frontend Development

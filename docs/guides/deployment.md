@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deploying the Zimna application to production.
+This guide covers deploying the Yiyara application to production.
 
 ## Prerequisites
 
