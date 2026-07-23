@@ -11,64 +11,26 @@ class UserAdmin(BaseUserAdmin):
         'username', 
         'first_name', 
         'last_name', 
+        'is_email_verified',
         'is_staff', 
-        'is_superuser',
         'is_active'
     )
 
-    list_filter = (
-        'is_staff', 
-        'is_superuser', 
-        'is_active', 
-        'gender'
-    )
-
-    search_fields = (
-        'email', 
-        'username', 
-        'first_name', 
-        'last_name'
-    )
-
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'gender', 'is_email_verified')
+    search_fields = ('email', 'username', 'first_name', 'last_name')
     ordering = ('email',)
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-
-        ('Personal info', {
-            'fields': (
-                'first_name', 
-                'last_name', 
-                'username', 
-                'gender'
-            )
-        }),
-
-        ('Permissions', {
-            'fields': (
-                'is_active', 
-                'is_staff', 
-                'is_superuser', 
-                'groups', 
-                'user_permissions'
-            )
-        }),
-
-        ('Important dates', {
-            'fields': ('last_login', 'date_joined')
-        }),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'username', 'gender')}),
+        ('Calendar Integration', {'fields': ('calendar_sync_enabled', 'google_refresh_token')}),
+        ('Permissions', {'fields': ('is_email_verified', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': (
-                'email', 
-                'password1', 
-                'password2',
-                'is_staff',
-                'is_superuser',
-                'is_active'
-            ),
+            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name'),
         }),
     )

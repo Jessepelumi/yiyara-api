@@ -2,61 +2,57 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
-# custom user manager to create admin superuser
+# Custom user manager to create admin superuser
 class UserManager(BaseUserManager):
-
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
         
-        email = self.normalize_email(email).lower()
+        email = self.normalize_email(email).lower().strip()
         extra_fields.setdefault("is_active", True)
 
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
 
+        user.save(using=self._db)
         return user
     
     def create_superuser(self, email, password=None, **extra_fields):
-
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
-        
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
-    
-    def get_by_natural_key(self, username):
-        return self.get(email=username)
 
-# user class
+# User class
 class User(AbstractUser):
-
-    # override the default auto-incrementing integer 
     id = models.UUIDField(
         primary_key=True, 
         default=uuid.uuid4, 
         editable=False
     )
 
-    # optional username
-    username = models.CharField(
-        max_length=150,
-        blank=True,
-        unique=True
-    )
-
-    # email
+    # Email as primary identifier
     email = models.EmailField(unique=True, db_index=True)
     is_email_verified = models.BooleanField(default=False)
 
-    # firstname & lastname
+    # Username (defaults to the email, editable later)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        blank=True
+    )
+    
+
+    # Names
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
 
@@ -71,31 +67,32 @@ class User(AbstractUser):
         blank=True
     )
 
+    # Integration context for Yiyara Decomposer & Scheduler
+    google_refresh_token = models.TextField(blank=True, null=True)
+    calendar_sync_enabled = models.BooleanField(default=False)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    # attach custom user manager to user
+    # Attach custom user manager to user
     objects = UserManager()
 
     class Meta:
         ordering = ['email']
 
     def save(self, *args, **kwargs):
-
-        # auto-generate username from email if empty
         if self.email:
-            self.email = self.email.lower()
+            self.email = self.email.lower().strip()
 
-        if not self.username and self.email:
-
-            base = self.email.split("@")[0]
-            username = base
+        # Auto-generate username from email
+        if not self.username:
+            base_username = self.email.split("@")[0]
+            username = base_username
             counter = 1
 
             while User.objects.filter(username=username).exclude(pk=self.pk).exists():
-                username = f"{base}{counter}"
+                username = f"{base_username}{counter}"
                 counter += 1
-
             self.username = username
 
         super().save(*args, **kwargs)
