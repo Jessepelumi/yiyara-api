@@ -23,6 +23,10 @@ class Task(models.Model):
     # optional description
     description = models.TextField(blank=True)
 
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subtasks')
+    estimated_duration_minutes = models.IntegerField(default=30)
+    order = models.IntegerField(default=0)
+
     due_date = models.DateField(
         null=True, 
         blank=True, 
