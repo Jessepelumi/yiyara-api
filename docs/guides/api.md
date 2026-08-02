@@ -1,172 +1,167 @@
-# API Documentation
+# API Reference Guide
 
-This guide documents the Yiyara REST API endpoints.
+This guide documents the REST API endpoints provided by `apps/api` (Django API) and `apps/decomposer` (Go Engine).
 
-## Base URL
+## Base URLs
 
-```
-http://localhost:8000/api/
-```
+* **Public REST API**: `http://localhost:8000/api/`
+* **Internal API (Django)**: `http://localhost:8000/internal/`
+* **Go Decomposer Engine**: `http://localhost:8080/`
+
+---
 
 ## Authentication
 
-The API uses JWT (JSON Web Token) authentication. Include the token in the Authorization header:
-
+Public endpoints require JSON Web Token (JWT) authentication passed in the `Authorization` header:
+```http
+Authorization: Bearer <your_access_token>
 ```
-Authorization: Bearer <your-jwt-token>
-```
 
-### Obtaining a Token
+---
 
-Currently, authentication is handled through Django's admin interface or custom implementation. JWT tokens are issued upon successful login.
+## Public REST API (`apps/api`)
 
-## Endpoints
+### 1. Goals API
 
-### Goals
+#### List and Create Goals
+* **Endpoint**: `GET /api/goals/` | `POST /api/goals/`
+* **Auth**: Required (`IsAuthenticated`)
 
-#### Decompose Goal
-
-Convert natural language goal into structured SMART goals and tasks using AI.
-
-**Endpoint:** `POST /api/decompose/`
-
-**Request Body:**
-
+##### `POST /api/goals/` Request Body
 ```json
 {
-  "text": "I want to learn Python programming and build a web application"
+  "raw_input": "Build a personal portfolio website with project case studies",
+  "due_date": "2026-12-31"
 }
 ```
 
-**Response (Success):**
-
+##### Response (`201 Created`)
 ```json
-[
-  {
-    "id": "uuid",
-    "title": "Learn Python Fundamentals",
-    "description": "Master basic Python concepts and syntax",
-    "due_date": "2026-06-01",
-    "is_completed": false,
-    "tasks": [
-      {
-        "id": "uuid",
-        "title": "Complete Python tutorial",
-        "description": "Work through an online Python tutorial",
-        "due_date": "2026-03-20",
-        "is_completed": false
-      }
-    ]
+{
+  "id": "e4a2c510-7212-4028-a400-60b13d297920",
+  "title": "Build a personal portfolio website with project case studies",
+  "description": "",
+  "raw_input": "Build a personal portfolio website with project case studies",
+  "status": "PROCESSING",
+  "due_date": "2026-12-31",
+  "is_completed": false,
+  "task_count": 0,
+  "created_at": "2026-08-02T10:00:00Z",
+  "updated_at": "2026-08-02T10:00:00Z",
+  "tasks": []
+}
+```
+
+#### Goal Detail & Deletion
+* **Endpoint**: `GET /api/goals/<uuid:pk>/` | `DELETE /api/goals/<uuid:pk>/`
+* **Auth**: Required (`IsAuthenticated`)
+
+---
+
+### 2. Conversations API
+
+#### Post Chat Message
+* **Endpoint**: `POST /api/conversations/chat/`
+* **Auth**: Required (`IsAuthenticated`)
+
+##### Request Body
+```json
+{
+  "goal_id": "e4a2c510-7212-4028-a400-60b13d297920",
+  "content": "Can you give me advice on structuring my portfolio case studies?"
+}
+```
+
+##### Response (`201 Created`)
+```json
+{
+  "conversation_id": "8a719fbc-3021-4f18-b219-c60f27918a51",
+  "message": {
+    "id": "771a4f02-1200-4e2b-bb99-8d769e120894",
+    "role": "model",
+    "content": "Sure! Here is a recommended structure for your case studies...",
+    "created_at": "2026-08-02T10:05:00Z"
   }
-]
-```
-
-**Response (Clarification Needed):**
-
-```json
-{
-  "error": "clarification_needed",
-  "message": "Please provide more specific details about your goal."
 }
 ```
 
-**Error Response:**
+#### Get Conversation History
+* **Endpoint**: `GET /api/conversations/history/<uuid:goal_id>/`
+* **Auth**: Required (`IsAuthenticated`)
 
+---
+
+## Inter-Service & Internal APIs
+
+### 1. Go Decomposer Trigger (`apps/decomposer`)
+
+#### Trigger Decomposition
+* **Endpoint**: `POST /v1/decompose`
+* **Headers**: `X-Internal-Secret: <INTERNAL_AUTH_SECRET>`
+
+##### Request Body
 ```json
 {
-  "error": "AI Processing Failed",
-  "details": "Specific error message"
+  "goal_id": "e4a2c510-7212-4028-a400-60b13d297920",
+  "user_id": "1",
+  "raw_input": "Build a personal portfolio website",
+  "due_date": "2026-12-31"
 }
 ```
 
-#### List Goals
-
-Retrieve all goals and their associated tasks for the authenticated user.
-
-**Endpoint:** `GET /api/list/`
-
-**Response:**
-
+##### Response (`202 Accepted`)
 ```json
-[
-  {
-    "id": "uuid",
-    "title": "Learn Python Fundamentals",
-    "description": "Master basic Python concepts and syntax",
-    "due_date": "2026-06-01",
-    "is_completed": false,
-    "tasks": [
-      {
-        "id": "uuid",
-        "title": "Complete Python tutorial",
-        "description": "Work through an online Python tutorial",
-        "due_date": "2026-03-20",
-        "is_completed": false
-      }
-    ]
-  }
-]
+{
+  "status": "accepted",
+  "goal_id": "e4a2c510-7212-4028-a400-60b13d297920"
+}
 ```
 
-## Data Models
+---
 
-### Goal
+### 2. Internal Task Ingestion (`apps/api`)
 
-| Field        | Type    | Description                    |
-| ------------ | ------- | ------------------------------ |
-| id           | UUID    | Unique identifier              |
-| title        | string  | Goal title                     |
-| description  | string  | Goal description               |
-| due_date     | date    | Optional due date (YYYY-MM-DD) |
-| is_completed | boolean | Completion status              |
-| tasks        | Task[]  | Associated tasks               |
+#### Bulk Task Ingestion Endpoint
+* **Endpoint**: `POST /internal/goals/<uuid:goal_id>/tasks/`
+* **Headers**: `X-Internal-Secret: <INTERNAL_AUTH_SECRET>`
 
-### Task
-
-| Field        | Type    | Description                    |
-| ------------ | ------- | ------------------------------ |
-| id           | UUID    | Unique identifier              |
-| title        | string  | Task title                     |
-| description  | string  | Task description               |
-| due_date     | date    | Optional due date (YYYY-MM-DD) |
-| is_completed | boolean | Completion status              |
-
-## Error Codes
-
-| Code | Description                                          |
-| ---- | ---------------------------------------------------- |
-| 400  | Bad Request - Missing or invalid parameters          |
-| 401  | Unauthorized - Invalid or missing authentication     |
-| 500  | Internal Server Error - Server-side processing error |
-
-## Rate Limiting
-
-Currently, no rate limiting is implemented. AI processing may be subject to provider limits.
-
-## SDK
-
-The frontend includes a TypeScript client in `src/lib/api/`. Example usage:
-
-```typescript
-import { goalsApi } from "@/lib/api/goals";
-
-// Decompose a goal
-const goals = await goalsApi.decompose("Learn React");
-
-// List all goals
-const allGoals = await goalsApi.list();
+##### Request Body
+```json
+{
+  "title": "Build a Personal Portfolio Website",
+  "description": "Comprehensive roadmap for website development",
+  "tasks": [
+    {
+      "title": "Phase 1: Requirements & Case Study Outline",
+      "description": "Outline case studies and gather assets",
+      "estimated_duration_minutes": 45,
+      "order": 0,
+      "parent_index": null
+    },
+    {
+      "title": "Phase 2: Frontend Implementation",
+      "description": "Build layout components",
+      "estimated_duration_minutes": 90,
+      "order": 1,
+      "parent_index": null
+    }
+  ]
+}
 ```
 
-## Testing
+##### Response (`201 Created`)
+```json
+{
+  "status": "success",
+  "tasks_created": 2
+}
+```
 
-Use the test endpoint to verify database connectivity: `GET /test/`
-
-## Future Endpoints
-
-Planned additions:
-
-- Task CRUD operations
-- Goal update/completion
-- User authentication endpoints
-- Progress tracking</content>
-  <parameter name="filePath">/Users/jeolad/Documents/zimna/docs/guides/api.md
+#### Internal Goal Failure Notification
+* **Endpoint**: `POST /internal/goals/<uuid:goal_id>/failed/`
+* **Headers**: `X-Internal-Secret: <INTERNAL_AUTH_SECRET>`
+```json
+{
+  "reason": "LLM provider timeout"
+}
+```

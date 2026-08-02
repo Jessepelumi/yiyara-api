@@ -1,94 +1,90 @@
-# Local Development Setup
+# Local Setup Guide
 
-This guide provides advanced setup instructions beyond the basic Quick Start in the main README. Ensure you've completed the [Quick Start](../../README.md) before proceeding.
+This guide provides instructions for setting up the Yiyara development environment.
 
-## Environment Configuration Details
+## Prerequisites
 
-### Database Setup
+- **Docker** & **Docker Compose** (recommended)
+- **Python 3.12+** (for local non-Docker Django development)
+- **Go 1.24+** (for local non-Docker Go Decomposer development)
+- **PostgreSQL 16** & **Redis 7**
 
-Follow the [Neon Postgres Connection Guide](neon.md) to set up your database connection.
+---
 
-### AI Configuration
+## Quickstart via Docker Compose
 
-1. Obtain a Google Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Add the API key to your `.env` file:
+The fastest way to start all services (PostgreSQL, Redis, Django API, Go Decomposer):
 
-```env
-GEMINI_API_KEY=your-gemini-api-key-here
-```
+1. **Clone repository and set up environment variables**:
+   ```bash
+   cp .env.example .env
+   ```
 
-### Django Configuration
+2. **Start the monorepo stack**:
+   ```bash
+   make up
+   ```
 
-Add the following to your `.env` file:
+3. **Check running service status**:
+   ```bash
+   make logs
+   ```
 
-```env
-DEBUG=True
-SECRET_KEY=your-secure-django-secret-key-here
-```
+4. **Stop the stack**:
+   ```bash
+   make down
+   ```
 
-Generate a secure secret key using Python:
+---
+
+## Service Endpoints & Ports
+
+| Service | Port | Endpoint URL | Description |
+| :--- | :--- | :--- | :--- |
+| **Django API** | `8000` | `http://localhost:8000` | Core REST API backend |
+| **Go Decomposer** | `8080` | `http://localhost:8080` | AI Decomposition microservice |
+| **PostgreSQL** | `5432` | `localhost:5432` | Relational Database |
+| **Redis** | `6379` | `localhost:6379` | Cache backend |
+
+---
+
+## Manual (Non-Docker) Local Development
+
+### 1. Django API Backend (`apps/api`)
 
 ```bash
-python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+cd apps/api
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start development server
+python manage.py runserver 0.0.0.0:8000
 ```
 
-## Development Workflow
+### 2. Go Decomposer Engine (`apps/decomposer`)
 
-### Running Commands
+```bash
+cd apps/decomposer
 
-- View logs: `make logs`
-- Restart services: `make restart`
-- Stop services: `make down`
-- Django shell: `make shell`
+# Build binary
+go build -o tmp/main ./cmd/server
 
-### Code Changes
+# Run server
+PORT=8080 API_SERVICE_URL=http://localhost:8000 ./tmp/main
+```
 
-- Backend changes are automatically reloaded
-- Frontend uses hot reloading with Next.js
-- Database schema changes require new migrations
+---
 
 ## Troubleshooting
 
-### Running Commands
-
-- View logs: `make logs`
-- Restart services: `make restart`
-- Stop services: `make down`
-- Django shell: `make shell`
-
-### Code Changes
-
-- Backend changes are automatically reloaded
-- Frontend uses hot reloading with Next.js
-- Database schema changes require new migrations
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Port conflicts**: Ensure ports 3000 and 8000 are available
-2. **Database connection**: Verify Neon credentials in `.env`
-3. **AI features**: Check Gemini API key validity
-4. **Dependencies**: Ensure Docker has sufficient resources
-
-### Logs
-
-Check service logs:
-
-```bash
-make logs
-```
-
-Or specific service:
-
-```bash
-docker-compose logs backend
-docker-compose logs frontend
-```
-
-## Next Steps
-
-- Review the [API Documentation](api.md) for available endpoints
-- Set up [AI Configuration](ai-configuration.md) for advanced features
-- Check the [Deployment Guide](deployment.md) for production setup</content>
-  <parameter name="filePath">/Users/jeolad/Documents/zimna/docs/guides/setup.md
+* **Port Conflicts**: Ensure ports `8000`, `8080`, `5432`, and `6379` are not in use by other local processes.
+* **Database Connection Errors**: Verify `PGHOST`, `PGDATABASE`, `PGUSER`, and `PGPASSWORD` match your `.env` configuration.
+* **Service Inter-Communication**: Ensure `INTERNAL_AUTH_SECRET` matches across `.env` settings for both `api` and `decomposer`.
