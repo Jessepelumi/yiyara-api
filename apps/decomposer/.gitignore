@@ -1,0 +1,12 @@
+# Go Binaries & Build
+bin/
+dist/
+*.exe
+*.exe.tmp
+*.dll
+*.so
+*.dylib
+
+# Air Live Reload
+tmp/
+air_errors.log

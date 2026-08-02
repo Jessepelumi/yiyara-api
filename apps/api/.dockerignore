@@ -1,0 +1,28 @@
+# Git & System
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Docker & Environment
+.env
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Backend (Django)
+venv/
+.venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+db.sqlite3
+media/
+static_root/
+
+# IDE & Tools
+.vscode/
+.idea/
+*.swp
+*.bak

@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yiyara-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yiyara
+      POSTGRES_PASSWORD: yiyara_password
+      POSTGRES_DB: yiyara_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yiyara -d yiyara_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: yiyara-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: yiyara-api
+    restart: unless-stopped
+    volumes:
+      - ./apps/api:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=dev_secret_key_change_in_prod
+      - PGHOST=postgres
+      - PGDATABASE=yiyara_db
+      - PGUSER=yiyara
+      - PGPASSWORD=yiyara_password
+      - PGPORT=5432
+      - REDIS_URL=redis://redis:6379/1
+      - GO_ENGINE_URL=http://decomposer:8080
+      - DECOMPOSER_URL=http://decomposer:8080
+      - INTERNAL_AUTH_SECRET=yiyara_internal_shared_secret
+      - GO_ENGINE_TIMEOUT_SECONDS=10.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: python manage.py runserver 0.0.0.0:8000
+
+  decomposer:
+    build:
+      context: ./apps/decomposer
+      dockerfile: Dockerfile
+      target: dev
+    container_name: yiyara-decomposer
+    restart: unless-stopped
+    volumes:
+      - ./apps/decomposer:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=development
+      - PORT=8080
+      - API_SERVICE_URL=http://api:8000
+      - INTERNAL_AUTH_SECRET=yiyara_internal_shared_secret
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
