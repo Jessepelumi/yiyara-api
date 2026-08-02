@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Goal
-from tasks.serializers import TaskSerializers
+from apps.api.apps.tasks.serializers import TaskSerializers
 
 class GoalSerializer(serializers.ModelSerializer):
     """Full read representation, including nested tasks once decomposition completes."""

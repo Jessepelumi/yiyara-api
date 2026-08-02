@@ -1,7 +1,7 @@
 import os
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from workflow.ai_engine import YiyaraWorkflow
+from apps.api.apps.workflow.ai_engine import YiyaraWorkflow
 
 User = get_user_model()
 

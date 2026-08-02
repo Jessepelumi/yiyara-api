@@ -101,7 +101,7 @@ from rest_framework.response import Response
 from .models import Goal, GoalStatus
 from .serializers import GoalSerializer, CreateGoalSerializer
 from .services import trigger_decomposition, DecompositionTriggerError
-from tasks.models import Task
+from apps.api.apps.tasks.models import Task
 
 logger = logging.getLogger(__name__)
 

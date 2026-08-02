@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Conversation, Message
 from .serializers import MessageSerializer
 from .services import handle_yiyara_logic
-from goals.models import Goal
+from apps.api.apps.goals.models import Goal
 
 class ChatAPIView(APIView):
     permission_classes = [IsAuthenticated]

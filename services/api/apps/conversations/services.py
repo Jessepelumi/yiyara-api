@@ -1,5 +1,5 @@
-from ai.providers.gemini_provider import GeminiProvider
-from workflow.ai_engine import YiyaraWorkflow
+from apps.api.apps.ai.providers.gemini_provider import GeminiProvider
+from apps.api.apps.workflow.ai_engine import YiyaraWorkflow
 from .models import Message
 from django.db import transaction
 

@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.conf import settings
-from goals.models import Goal
+from apps.api.apps.goals.models import Goal
 
 class Conversation(models.Model):
     id = models.UUIDField(

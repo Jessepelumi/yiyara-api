@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from goals.models import Goal # link to Goal model
+from apps.api.apps.goals.models import Goal # link to Goal model
 
 class Task(models.Model):
     # UUID as primary key

@@ -1,11 +1,11 @@
 import json
 from django.utils import timezone
 from django.db import transaction
-from goals.models import Goal # Goal model
-from tasks.models import Task # Task model
-from ai.providers.gemini_provider import GeminiProvider
-from ai.prompts.goal_decomposition_prompt import DECOMPOSITION_SYSTEM_PROMPT
-from conversations.models import Conversation, Message
+from apps.api.apps.goals.models import Goal # Goal model
+from apps.api.apps.tasks.models import Task # Task model
+from apps.api.apps.ai.providers.gemini_provider import GeminiProvider
+from apps.api.apps.ai.prompts.goal_decomposition_prompt import DECOMPOSITION_SYSTEM_PROMPT
+from apps.api.apps.conversations.models import Conversation, Message
 
 class YiyaraWorkflow:
     def __init__(self, api_key):
