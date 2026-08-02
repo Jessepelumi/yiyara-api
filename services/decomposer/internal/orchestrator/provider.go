@@ -2,7 +2,7 @@ package orchestrator
 
 import (
 	"context"
-	"yiyara/services/decomposer/internal/contract"
+	"yiyara-decomposer/internal/contract"
 )
 
 // LLMProvider is the "port" that any external model adapter (OpenAI, Gemini) must implement

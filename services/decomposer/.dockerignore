@@ -1,0 +1,17 @@
+# Git & System
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Docker & Environment
+.env
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# IDE & Tools
+.vscode/
+.idea/
+*.swp
+*.bak

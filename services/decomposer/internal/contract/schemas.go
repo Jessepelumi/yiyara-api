@@ -26,14 +26,14 @@ type TaskNode struct {
 
 // DecompositionRequest defines the incoming payload for a decomposition job
 type DecompositionRequest struct {
-	GoalId string `json:"goal_id"`
+	AmbitionId string `json:"ambition_id"`
 	Prompt     string `json:"prompt"`
 	MaxDepth   int    `json:"max_depth"`
 }
 
 // DecompositionResponse defines the final structured output sent back or pushed to the queue
 type DecompositionResponse struct {
-	GoalId string    `json:"goal_id"`
+	AmbitionId string    `json:"ambition_id"`
 	RootTask   *TaskNode `json:"root_task"`
 	DurationMs int64     `json:"duration_ms"`
 }
